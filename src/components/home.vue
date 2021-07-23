@@ -8,17 +8,17 @@
 
 <script>
 export default {
-  name: "home",
+  name: 'home',
   props: {
     msg: String,
   },
   methods: {
     backout() {
-      window.sessionStorage.clear("token");
-      this.$router.push("/login");
+      window.sessionStorage.clear('token')
+      this.$router.push('/login')
     },
   },
-};
+}
 </script>
 
 <style scoped>

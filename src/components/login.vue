@@ -42,59 +42,59 @@
 
 <script>
 export default {
-  name: "login",
+  name: 'login',
   data() {
     return {
       form: {
-        username: "admin",
-        password: "123456",
+        username: 'admin',
+        password: '123456',
       },
       // 表单验证规则对象
       loginrules: {
         username: [
-          { required: true, message: "请输入登录名称", trigger: "blur" },
+          { required: true, message: '请输入登录名称', trigger: 'blur' },
           {
             min: 4,
             max: 10,
-            message: "长度在 4 到 10 个字符",
-            trigger: "blur",
+            message: '长度在 4 到 10 个字符',
+            trigger: 'blur',
           },
         ],
         password: [
-          { required: true, message: "请输入登录密码", trigger: "blur" },
+          { required: true, message: '请输入登录密码', trigger: 'blur' },
           {
             min: 4,
             max: 15,
-            message: "长度在 4 到 15 个字符",
-            trigger: "blur",
+            message: '长度在 4 到 15 个字符',
+            trigger: 'blur',
           },
         ],
       },
-    };
+    }
   },
   methods: {
     isTrue() {
       this.$refs.loginRef.validate(async (valid) => {
-        if (!valid) return;
-        const { data: res } = await this.$http.post("login", this.form);
-        if (res.meta.status !== 200) return this.$message.error("登录失败");
-        this.$message.success("登录成功");
-        console.log(res);
-        window.sessionStorage.setItem("token", res.data.token);
-        this.$router.push("/home");
-      });
+        if (!valid) return
+        const { data: res } = await this.$http.post('login', this.form)
+        if (res.meta.status !== 200) return this.$message.error('登录失败')
+        this.$message.success('登录成功')
+        console.log(res)
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
+      })
     },
     reactLogin() {
-      this.$refs.loginRef.resetFields();
+      this.$refs.loginRef.resetFields()
     },
   },
   open2() {
     this.$message({
-      message: "恭喜你，这是一条成功消息",
-      type: "success",
-    });
+      message: '恭喜你，这是一条成功消息',
+      type: 'success',
+    })
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
