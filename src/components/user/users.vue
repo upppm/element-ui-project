@@ -45,8 +45,8 @@
               <el-form-item label="邮箱" prop="email">
                 <el-input type="text" v-model="addForm.email"></el-input>
               </el-form-item>
-              <el-form-item label="手机号" prop="mobail">
-                <el-input type="text" v-model="addForm.mobail"></el-input>
+              <el-form-item label="手机号" prop="mobile">
+                <el-input type="text" v-model="addForm.mobile"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -72,20 +72,51 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
-          <template v-slot="">
+        <el-table-column label="操作" width="200">
+          <template v-slot="scopes">
             <!-- 修改按钮 -->
             <el-button
               type="primary"
               icon="el-icon-edit"
               size="mini"
+              @click="reviseBtn(scopes.row.id)"
             ></el-button>
+            <el-dialog
+              title="修改用户"
+              :visible.sync="reviseVisible"
+              @close="closeRevise"
+            >
+              <el-form
+                :model="reviseList"
+                label-width="70px"
+                ref="reviseRef"
+                :rules="addFormRules"
+              >
+                <el-form-item label="用户名">
+                  <el-input v-model="reviseList.username" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                  <el-input v-model="reviseList.email"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号" prop="mobile">
+                  <el-input v-model="reviseList.mobile"></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="reviseVisible = false">取 消</el-button>
+                <el-button type="primary" @click="reviseIstrue(scopes.row.id)"
+                  >确 定</el-button
+                >
+              </div>
+            </el-dialog>
             <!-- 删除按钮 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="mini"
-            ></el-button>
+              @click="deleteBtn(scopes.row.id)"
+            >
+            </el-button>
             <!-- 设置按钮 -->
             <el-tooltip
               class="item"
@@ -167,7 +198,7 @@ export default {
         username: '',
         password: '',
         email: '',
-        mobail: '',
+        mobile: '',
       },
       // 校验规则
       addFormRules: {
@@ -190,9 +221,16 @@ export default {
           },
         ],
         email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
-        mobail: [
+        mobile: [
           { required: true, validator: validateMobail, trigger: 'blur' },
         ],
+      },
+      // 修改按钮弹窗内容
+      reviseVisible: false,
+      reviseList: {
+        username: '',
+        email: '',
+        mobile: '',
       },
     }
   },
@@ -258,6 +296,64 @@ export default {
         this.getUserList()
       })
     },
+    // 修改按钮点击事件
+    async reviseBtn(all) {
+      this.reviseVisible = true
+      console.log(all)
+      const { data: res } = await this.$http.get(`users/${all}`)
+      if (res.meta.status !== 200)
+        return this.$message.error('获取用户信息失败')
+      this.$message.success('获取用户信息成功')
+      this.reviseList = res.data
+      console.log(res)
+    },
+    // 点击修改按钮确认事件
+    reviseIstrue(all) {
+      this.$refs.reviseRef.validate(async (valid) => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(
+          `users/${all}`,
+          this.reviseList
+        )
+        if (res.meta.status !== 200) return this.$message.error('修改失败')
+        this.$message.success('修改成功')
+        console.log(res)
+        this.reviseVisible = false
+      })
+    },
+    // 关闭对话框时重置内容
+    closeRevise() {
+      // this.$refs.reviseRef.resetFields()
+    },
+    // 删除用户按钮
+    async deleteBtn(all) {
+      const test = await this.$confirm(
+        '此操作将永久删除该文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除',
+        })
+      })
+      console.log(test)
+      if (test == 'confirm') {
+        const res = await this.$http.delete(`users/${all}`)
+        if (res.data.meta.status !== 200) return this.$message.error('删除失败')
+        this.$message({
+          type: 'success',
+          message: '删除成功!',
+        })
+        this.getUserList()
+        location.reload()
+        console.log(res)
+      }
+    },
   },
 }
 </script>
@@ -269,5 +365,8 @@ export default {
 .el-table {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+.el-button {
+  margin-left: 10px;
 }
 </style>
