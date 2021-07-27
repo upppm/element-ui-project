@@ -33,8 +33,8 @@
             <el-form
               :model="addForm"
               :rules="addFormRules"
-              ref="addFormRef"
               label-width="70px"
+              ref="addFormRef"
             >
               <el-form-item label="用户名" prop="username">
                 <el-input type="text" v-model="addForm.username"></el-input>
@@ -129,8 +129,39 @@
                 type="warning"
                 icon="el-icon-setting"
                 size="mini"
+                @click="setupBtn(scopes.row)"
               ></el-button>
             </el-tooltip>
+            <!-- 角色分配按钮 -->
+            <el-dialog
+              title="分配角色"
+              :visible.sync="setupVisible"
+              width="50%"
+            >
+              <el-form :model="reviseList" label-width="70px">
+                <el-form-item label="当前用户">
+                  <el-input v-model="reviseList.username" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="当前角色">
+                  <el-input v-model="reviseList.role_name" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="分配角色">
+                  <el-select v-model="bindRolesList" placeholder="请选择活角色">
+                    <!-- 这里的value指的是记录到model中的内容 -->
+                    <el-option
+                      v-for="item in rolesList"
+                      :label="item.roleName"
+                      :value="item.id"
+                      :key="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="setupVisible = false">取 消</el-button>
+                <el-button type="primary" @click="setupIstrue">确 定</el-button>
+              </span>
+            </el-dialog>
           </template>
         </el-table-column>
       </el-table>
@@ -232,6 +263,11 @@ export default {
         email: '',
         mobile: '',
       },
+      setupVisible: false,
+      // 拿到的角色列表
+      rolesList: [],
+      // 绑定到的角色内容
+      bindRolesList: '',
     }
   },
   created() {
@@ -328,7 +364,7 @@ export default {
     // 删除用户按钮
     async deleteBtn(all) {
       const test = await this.$confirm(
-        '此操作将永久删除该文件, 是否继续?',
+        '此操作将永久删除该用户信息, 是否继续?',
         '提示',
         {
           confirmButtonText: '确定',
@@ -353,6 +389,32 @@ export default {
         location.reload()
         console.log(res)
       }
+    },
+    // 角色分配按钮
+    async setupBtn(all) {
+      this.reviseList = all
+      // 获取所有角色
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) return this.$message.error('获取失败')
+      this.$message.success('获取成功')
+      console.log(res)
+      this.rolesList = res.data
+      console.log(this.rolesList)
+      this.setupVisible = true
+    },
+    // 点击确定按钮，分配角色
+    async setupIstrue() {
+      if (this.bindRolesList) {
+        const { data: res } = await this.$http.put(
+          `users/${this.reviseList.id}/role`,
+          { rid: this.bindRolesList }
+        )
+        if (res.meta.status !== 200) return this.$message.error('获取失败')
+        this.$message.success('获取成功')
+        console.log(res)
+      }
+      this.getUserList()
+      this.setupVisible = false
     },
   },
 }
