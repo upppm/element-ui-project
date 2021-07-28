@@ -90,9 +90,10 @@
             type="primary"
             icon="el-icon-edit"
             size="mini"
-            @click="sortReviseBtn(scope2.row.cat_id)"
+            @click="sortReviseBtn(scope2.row)"
             >编辑</el-button
           >
+
           <el-button
             type="danger"
             icon="el-icon-delete"
@@ -102,6 +103,25 @@
           </el-button>
         </template>
       </tree-table>
+      <el-dialog title="编辑分类" :visible.sync="reviseSortVisible" width="50%">
+        <el-form
+          label-width="80px"
+          ref="reviseSortRef"
+          :rules="reviseSortRules"
+          :model="sortContentall"
+        >
+          <el-form-item label="分类名称" prop="sortContent">
+            <el-input
+              v-model="sortContentall.sortContent"
+              type="text"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="reviseSortVisible = false">取 消</el-button>
+          <el-button type="primary" @click="reviseSortIstrue">确 定</el-button>
+        </div>
+      </el-dialog>
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="sortpageInfo.pagenum"
@@ -178,6 +198,18 @@ export default {
           template: 'operate',
         },
       ],
+      // 编辑按钮中绑定的内容
+      sortContentall: {
+        sortContent: '',
+        sortContentId: '',
+      },
+
+      reviseSortVisible: false,
+      reviseSortRules: {
+        sortContent: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' },
+        ],
+      },
     }
   },
   created() {
@@ -245,9 +277,51 @@ export default {
       console.log(`当前页: ${val}`)
     },
     // 编辑按钮
-    sortReviseBtn() {},
+    sortReviseBtn(all) {
+      this.reviseSortVisible = true
+      console.log(all)
+      this.sortContentall.sortContent = all.cat_name
+      this.sortContentall.sortContentId = all.cat_id
+    },
+    async reviseSortIstrue() {
+      const { data: res } = await this.$http.put(
+        `categories/${this.sortContentall.sortContentId}`,
+        { cat_name: this.sortContentall.sortContent }
+      )
+      if (res.meta.status !== 200) return this.$message.error('更新失败')
+      this.$message.success('更新成功')
+      this.reviseSortVisible = false
+      this.getSortList()
+      console.log(res)
+    },
+
     // 删除按钮
-    deleteSort() {},
+    deleteSort(tes) {
+      this.$confirm('此操作将永久删除该用户信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(async () => {
+          const { data: res } = await this.$http.delete(`categories/${tes}`)
+          console.log(res)
+          if (res.meta.status !== 200) {
+            return this.$message.error('删除失败')
+          } else {
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            })
+            this.getSortList()
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
+    },
   },
 }
 </script>
