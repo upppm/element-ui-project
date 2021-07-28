@@ -2,7 +2,10 @@
   <el-container>
     <!-- 头部区域 -->
     <el-header>
-      <div class="content">后台管理系统</div>
+      <div class="content">
+        <img src="../assets/man2.png" alt="" />
+        <div class="content_name">后台管理系统</div>
+      </div>
       <div class="back">
         <el-button type="info" plain @click="backout">退出</el-button>
       </div>
@@ -30,7 +33,7 @@
         >
           <el-submenu :index="index + ''">
             <template slot="title">
-              <i :class="iconitem[index]"></i>
+              <i :class="iconitem[index]" style="color: #d3dce6"></i>
               <span>{{ item.authName }}</span>
             </template>
             <el-menu-item
@@ -40,7 +43,7 @@
               @click="pathStore('/' + items.path)"
             >
               <template slot="title">
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-menu" style="color: #d3dce6"></i>
                 <span>{{ items.authName }}</span>
               </template>
             </el-menu-item>
@@ -119,26 +122,39 @@ export default {
 <style scoped lang="less">
 .el-container {
   height: 100%;
+  background: url(../assets/bgd.jpg);
 }
 .el-header {
-  background-color: rgba(51, 51, 51);
-  color: rgb(247, 241, 241);
+  height: 70px !important;
+  background-color: rgba(86, 98, 114, 0.6);
+  color: rgb(255, 255, 255);
   text-align: left;
-  line-height: 60px;
+  line-height: 70px;
   display: flex;
   div {
     flex: 1;
   }
   .content {
-    font-size: 20px;
-    font-weight: 500;
+    position: relative;
+    font-size: 38px;
+    font-family: 'STKaiti';
+    font-weight: 900;
+    > img {
+      position: absolute;
+      left: 1px;
+      height: 70px;
+    }
+    &_name {
+      position: relative;
+      left: 75px;
+    }
   }
   .back {
     text-align: right;
   }
 }
 .el-aside {
-  background-color: rgba(51, 51, 51, 0.9);
+  background-color: rgba(86, 98, 114, 0.6);
   color: #d3dce6;
   text-align: center;
   .el-menu {
@@ -151,13 +167,16 @@ export default {
 }
 
 .el-main {
-  background-color: rgba(234, 237, 241, 0.8);
+  // background: url(../assets/bg1.png);
   color: #e9eef3;
   text-align: center;
 }
 .leftClose {
-  color: #7a7b7c;
+  color: #a9abaf;
   font-weight: 700;
-  background: rgb(88, 88, 88);
+  background: url(../assets/bg1.png);
+}
+.i {
+  color: #d3dce6;
 }
 </style>
