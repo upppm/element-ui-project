@@ -328,8 +328,7 @@ export default {
           // ...this.listParContent,
           // ...this.listAttrContent,
         ]
-        console.log('//////////')
-        console.log(this.ListBaseMessage)
+
         const { data: res } = await this.$http.post(
           'goods',
           this.ListBaseMessage
