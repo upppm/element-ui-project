@@ -3,7 +3,7 @@
     <div class="login_box">
       <!-- 头像区 -->
       <div class="avatar_box">
-        <img src="../assets/logo.png" alt="avatar" />
+        <img src="../assets/man1.png" alt="avatar" />
       </div>
       <!-- 登录区 -->
       <div>
@@ -37,6 +37,21 @@
         </el-form>
       </div>
     </div>
+    <div class="position">
+      <div class="background1">
+        <div class="background2"></div>
+        <div class="box">
+          <div class="bear"></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: left">
+      <input type="text" @input="inputMsee" v-bind:value="message" style="" />{{
+        message
+      }}
+    </div>
+
+    <!-- <div>{{ message }}</div> -->
   </div>
 </template>
 
@@ -49,6 +64,7 @@ export default {
         username: 'admin',
         password: '123456',
       },
+      message: '我是双向绑定事件',
       // 表单验证规则对象
       loginrules: {
         username: [
@@ -72,7 +88,19 @@ export default {
       },
     }
   },
+  created() {
+    console.log(this.form)
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        console.log(i)
+      }, 1000)
+    }
+  },
   methods: {
+    inputMsee(event) {
+      console.log(event)
+      return (this.message = event.target.value)
+    },
     isTrue() {
       this.$refs.loginRef.validate(async (valid) => {
         if (!valid) return
@@ -99,7 +127,8 @@ export default {
 
 <style lang="less" scoped>
 .login {
-  background-color: #2b4b6b;
+  background: url(../assets/imgbag1.jpg) no-repeat;
+  background-size: 100%;
   height: 100%;
   &_box {
     width: 450px;
@@ -141,5 +170,80 @@ export default {
 .btns {
   display: flex;
   justify-content: flex-end;
+}
+.position {
+  position: relative;
+  top: 75%;
+}
+
+.box {
+  position: absolute;
+  left: 0;
+  top: 65px;
+  animation: box 4s forwards;
+}
+
+.box .bear {
+  height: 100px;
+  width: 195.5px;
+  background: url(../assets/bear.png);
+  background-position: 0px 0px;
+  animation: bear 0.7s steps(8) infinite;
+}
+
+@keyframes box {
+  0% {
+  }
+
+  100% {
+    left: 50%;
+  }
+}
+
+@keyframes bear {
+  0% {
+  }
+
+  100% {
+    background-position: -1604px 5px;
+  }
+}
+
+@keyframes bg1 {
+  0% {
+  }
+
+  100% {
+    background-position: -2100px;
+  }
+}
+
+@keyframes bg2 {
+  0% {
+  }
+
+  100% {
+    background-position: -2100px;
+  }
+}
+
+.background1 {
+  position: relative;
+  width: 100%;
+  height: 175px;
+  background: url(../assets/bg2.png);
+  background-size: 1300px;
+  animation: bg2 30s linear infinite;
+}
+
+.background1 .background2 {
+  position: absolute;
+  bottom: 0%;
+  margin-bottom: -5px;
+  width: 100%;
+  height: 120px;
+  background: url(../assets/bg1.png);
+  background-size: 1400px;
+  animation: bg1 18s linear infinite;
 }
 </style>
